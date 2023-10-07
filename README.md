@@ -1,3 +1,7 @@
+⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️ 
+⚠️ PROTOTYPE STATE ⚠️
+⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+
 # Semantic Gradle
 
 Gradle Plugin for Automatic Semantic Versioning

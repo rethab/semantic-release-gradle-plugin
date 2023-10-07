@@ -101,7 +101,8 @@ class SemanticGradleIntegrationTest {
 
     private fun createRepository() {
         runCommand(listOf("git", "init"))
-        runCommand(listOf("git", "config", "user.email", "you@example.com"))
+        runCommand(listOf("git", "config", "user.email", "test@example.com"))
+        runCommand(listOf("git", "config", "user.name", "test"))
     }
 
     private fun runCommand(command: List<String>) {
