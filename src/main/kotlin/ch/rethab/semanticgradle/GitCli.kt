@@ -6,25 +6,31 @@ import java.util.concurrent.TimeUnit
 
 class GitCli(private val projectDir: File) {
 
-    fun listCommits(): List<Commit> {
-        val process = ProcessBuilder(listOf("git", "log", "--pretty=oneline", "--decorate"))
-            .directory(projectDir)
-            .start()
+    fun listCommits(): List<Commit> =
+        runCommand(listOf("git", "log", "--pretty=oneline", "--decorate")).map { parseCommit(it) }
+
+    fun tag(version: Version) =
+        runCommand(listOf("git", "tag", version.toString(vPrefix = true)))
+
+    fun push() =
+        runCommand(listOf("git", "push", "--tags"))
+
+    private fun runCommand(command: List<String>): List<String> {
+        val process = ProcessBuilder(command).directory(projectDir).start()
         val errorLines = process.errorStream.reader().readLines()
         val outputLines = process.inputStream.reader().readLines()
         val completed = process.waitFor(5, TimeUnit.SECONDS)
         val exitCode = process.exitValue()
 
         if (!completed) {
-            throw IOException("git log did not complete within 5 seconds")
+            throw IOException("Command '${command.joinToString(" ")}' did not complete within 5 seconds")
         }
 
         if (exitCode != 0) {
-            // TODO: error message is not shown
-            throw IOException("git log failed to run: " + errorLines.joinToString { "," })
+            throw IOException("Command '${command.joinToString(" ")}' failed to run: " + errorLines.joinToString("\n"))
         }
 
-        return outputLines.map { parseCommit(it) }
+        return outputLines
     }
 
     companion object {

@@ -14,13 +14,16 @@ import kotlin.test.assertContains
 class SemanticGradleIntegrationTest {
 
     @TempDir
-    lateinit var buildDir: File
+    lateinit var projectDir: File
+
+    @TempDir
+    lateinit var upstreamRepository: File
 
     lateinit var buildFile: File
 
     @BeforeEach
     fun setup() {
-        buildFile = File(buildDir, "build.gradle")
+        buildFile = File(projectDir, "build.gradle")
         buildFile.createNewFile()
         buildFile.writeText("""
             plugins {
@@ -33,22 +36,16 @@ class SemanticGradleIntegrationTest {
 
     @Test
     fun showsCommitUntilLatestVersion() {
-        buildFile.appendText("""
-            semanticGradle {
-              
-            }
-        """.trimIndent())
-        createRepository()
-        createCommit("alpha", "v1.0.0")
-        createCommit("beta", "v1.1.0")
-        createCommit("chore: gamma")
-        createCommit("fix: delta")
-        createCommit("chore: epsilon")
-
-        println(buildFile.readText())
+        createRepository(listOf(
+            "alpha" to "v1.0.0",
+            "beta" to "v1.1.0",
+            "chore: gamma" to null,
+            "fix: delta" to null,
+            "chore: epsilon" to null,
+        ))
 
         val result = GradleRunner.create()
-            .withProjectDir(buildDir)
+            .withProjectDir(projectDir)
             .withArguments("semanticGradleSetVersion", "--stacktrace")
             .withPluginClasspath()
             .build()
@@ -74,40 +71,69 @@ class SemanticGradleIntegrationTest {
             }
         """.trimIndent())
 
-        createRepository()
-        createCommit("alpha", "v1.0.0")
-        createCommit("fix: delta")
-
-        println(buildFile.readText())
+        createRepository(listOf(
+            "alpha" to "v1.0.0",
+            "fix: delta" to null
+        ))
 
         val result = GradleRunner.create()
-            .withProjectDir(buildDir)
+            .withProjectDir(projectDir)
             .withArguments("generatePomFileForMavenJavaPublication", "--stacktrace")
             .withPluginClasspath()
             .build()
 
         println("OUTPUT: " + result.output)
-        val pomFile = File(buildDir, "build/publications/mavenJava/pom-default.xml")
+        val pomFile = File(projectDir, "build/publications/mavenJava/pom-default.xml")
         assertContains(pomFile.readText(), "<version>1.0.1</version>")
         assertEquals(TaskOutcome.SUCCESS, result.task(":generatePomFileForMavenJavaPublication")?.outcome)
     }
 
-    private fun createCommit(message: String, tag: String? = null) {
-        runCommand(listOf("git", "commit", "--allow-empty", "-m", message))
-        if (tag != null) {
-            runCommand(listOf("git", "tag", tag))
+    @Test
+    fun shouldTagCommitAndPush() {
+        buildFile.appendText("""
+            version = "0.0.0-SNAPSHOT"
+            
+            tasks.named('semanticGradleSetVersion') {
+                finalizedBy semanticGradleTagVersion
+            }
+        """.trimIndent())
+
+        createRepository(listOf(
+            "alpha" to "v1.0.0",
+            "fix: delta" to null
+        ))
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments("semanticGradleSetVersion", "--stacktrace")
+            .withPluginClasspath()
+            .build()
+
+        println("OUTPUT: " + result.output)
+        assertEquals(TaskOutcome.SUCCESS, result.task(":semanticGradleSetVersion")?.outcome)
+        assertContains(showTag(upstreamRepository, "v1.0.1"), "fix: delta")
+    }
+
+    private fun createRepository(commitsAndTags: List<Pair<String, String?>>) {
+        runCommand(upstreamRepository, listOf("git", "init", "-b", "main"))
+        runCommand(upstreamRepository, listOf("git", "config", "user.email", "test@example.com"))
+        runCommand(upstreamRepository, listOf("git", "config", "user.name", "test"))
+
+        commitsAndTags.forEach { (commit, tag) ->
+            runCommand(upstreamRepository, listOf("git", "commit", "--allow-empty", "--message", commit))
+            if (tag != null) {
+                runCommand(upstreamRepository, listOf("git", "tag", tag))
+            }
         }
+
+        runCommand(projectDir, listOf("git", "init", "-b", "main"))
+        runCommand(projectDir, listOf("git", "remote", "add", "origin", upstreamRepository.absolutePath))
+        runCommand(projectDir, listOf("git", "pull", "--tags", "origin", "main"))
     }
 
-    private fun createRepository() {
-        runCommand(listOf("git", "init"))
-        runCommand(listOf("git", "config", "user.email", "test@example.com"))
-        runCommand(listOf("git", "config", "user.name", "test"))
-    }
-
-    private fun runCommand(command: List<String>) {
+    private fun runCommand(dir: File, command: List<String>) {
         val process = ProcessBuilder(command)
-            .directory(buildDir)
+            .directory(dir)
             .redirectOutput(INHERIT)
             .redirectError(INHERIT)
             .start()
@@ -115,6 +141,15 @@ class SemanticGradleIntegrationTest {
         assertTrue(process.waitFor(2, TimeUnit.SECONDS), "Command failed: $command")
         assertEquals(0, process.exitValue())
 
+    }
+
+    private fun showTag(dir: File, tag: String): String {
+        val process = ProcessBuilder(listOf("git", "show", tag)).directory(dir).start()
+        val outputLines = process.inputStream.reader().readLines()
+        assertTrue(process.waitFor(5, TimeUnit.SECONDS))
+        assertEquals(0, process.exitValue())
+
+        return outputLines.joinToString("\n")
     }
 
 }

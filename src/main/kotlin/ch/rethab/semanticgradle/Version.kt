@@ -15,9 +15,16 @@ data class Version(
     }
 
     companion object {
-        private val regex = Regex("v(\\d+)\\.(\\d+)\\.(\\d+)")
-        fun parse(tag: String): Version? =
-            regex.matchEntire(tag)?.let { result ->
+        private val versionRegex = Regex("(\\d+)\\.(\\d+)\\.(\\d+)")
+
+        private val tagRegex = Regex("v(\\d+)\\.(\\d+)\\.(\\d+)")
+
+        fun parseTag(tag: String): Version? = parse(tag, tagRegex)
+
+        fun parse(version: String): Version? = parse(version, versionRegex)
+
+        private fun parse(version: String, regex: Regex): Version? =
+            regex.matchEntire(version)?.let { result ->
                 val (major, minor, patch) = result.groupValues.drop(1).map { it.toInt() }
 
                 Version(major, minor, patch)

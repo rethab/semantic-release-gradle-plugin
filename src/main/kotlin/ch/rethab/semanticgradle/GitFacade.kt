@@ -5,15 +5,25 @@ class GitFacade(private val cli: GitCli) {
     fun findLatestVersion(): Version? =
         cli.listCommits()
             .firstOrNull { commit -> commit.tags.any { it.isAVersion() } }
-            ?.tags?.firstNotNullOf { Version.parse(it) }
+            ?.tags?.firstNotNullOf { Version.parseTag(it) }
 
     fun findCommitsSince(version: Version): List<Commit> =
         cli.listCommits().takeWhile { it.tags.containsNot(version) }
 
-    private fun List<String>.containsNot(version: Version): Boolean =
-        this.none { tag -> Version.parse(tag)?.equals(version) ?: false }
+    fun tagCurrentHead(version: Version) {
+        cli.tag(version)
+        println("Tagged $version")
+    }
 
-    private fun String.isAVersion(): Boolean = Version.parse(this) != null
+    fun push() {
+        cli.push()
+        println("Pushed")
+    }
+
+    private fun List<String>.containsNot(version: Version): Boolean =
+        this.none { tag -> Version.parseTag(tag)?.equals(version) ?: false }
+
+    private fun String.isAVersion(): Boolean = Version.parseTag(this) != null
 
 }
 

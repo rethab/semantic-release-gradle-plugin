@@ -5,7 +5,7 @@ import org.gradle.api.tasks.TaskAction
 
 open class SetSemanticVersionTask : DefaultTask() {
     @TaskAction
-    fun dry() {
+    fun setNextVersion() {
         val git = GitFacade(GitCli(project.projectDir))
         val semanticAnalyzer = SemanticAnalyzer()
         val latestVersion = git.findLatestVersion()
