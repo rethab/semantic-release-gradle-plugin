@@ -3,9 +3,7 @@ package ch.rethab.semanticgradle
 class GitFacade(private val cli: GitCli) {
 
     fun findLatestVersion(): Version? =
-        cli.listCommits()
-            .firstOrNull { commit -> commit.tags.any { it.isAVersion() } }
-            ?.tags?.firstNotNullOf { Version.parseTag(it) }
+        cli.listTags().maxByOrNull { it }
 
     fun findCommitsSince(version: Version): List<Commit> =
         cli.listCommits().takeWhile { it.tags.containsNot(version) }

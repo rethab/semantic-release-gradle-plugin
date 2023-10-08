@@ -9,6 +9,15 @@ class GitCli(private val projectDir: File) {
     fun listCommits(): List<Commit> =
         runCommand(listOf("git", "log", "--pretty=oneline", "--decorate")).map { parseCommit(it) }
 
+    fun listTags(): List<Version> {
+
+        // TODO --unshallow, ensure only fetch for current branch
+        runCommand(listOf("git", "fetch", "--tags"))
+
+        return runCommand(listOf("git", "tag", "--merged", "HEAD")).mapNotNull { Version.parseTag(it) }
+    }
+
+
     fun tag(version: Version) =
         runCommand(listOf("git", "tag", version.toString(vPrefix = true)))
 

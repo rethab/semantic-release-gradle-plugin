@@ -128,7 +128,7 @@ class SemanticGradleIntegrationTest {
 
         runCommand(projectDir, listOf("git", "init", "-b", "main"))
         runCommand(projectDir, listOf("git", "remote", "add", "origin", upstreamRepository.absolutePath))
-        runCommand(projectDir, listOf("git", "pull", "--tags", "origin", "main"))
+        runCommand(projectDir, listOf("git", "pull", "origin", "main"))
     }
 
     private fun runCommand(dir: File, command: List<String>) {

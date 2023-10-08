@@ -19,15 +19,15 @@ class GitFacadeTest {
 
     @Test
     fun shouldReturnLatestVersion() {
-        `when`(gitCli.listCommits()).thenReturn(listOf(
-            Commit("", listOf()),
-            Commit("", listOf("test")),
-            Commit("", listOf("foo", "v1.1.0")),
+        `when`(gitCli.listTags()).thenReturn(listOf(
+            Version(1, 1, 5),
+            Version(1, 2, 3),
+            Version(0, 1, 3),
         ))
 
         val latestVersion = gitFacade.findLatestVersion()
 
-        assertEquals(Version(1, 1, 0), latestVersion)
+        assertEquals(Version(1, 2, 3), latestVersion)
     }
 
     @Test

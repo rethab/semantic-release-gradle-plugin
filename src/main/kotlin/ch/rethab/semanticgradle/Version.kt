@@ -4,7 +4,15 @@ data class Version(
     val major: Int,
     val minor: Int,
     val patch: Int,
-) {
+) : Comparable<Version> {
+
+    override fun compareTo(other: Version): Int {
+        val majorCompare = major.compareTo(other.major)
+        if (majorCompare != 0) return majorCompare
+        val minorCompare = minor.compareTo(other.minor)
+        if (minorCompare != 0) return minorCompare
+        return patch.compareTo(other.patch)
+    }
 
     override fun toString(): String {
         return toString(true)
