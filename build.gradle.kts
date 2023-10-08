@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.0"
     id("java-gradle-plugin")
-    id("maven-publish")
+    id("com.gradle.plugin-publish") version "1.2.1"
 }
 
 kotlin {
@@ -9,17 +9,22 @@ kotlin {
 }
 
 group = "ch.rethab"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 
 repositories {
     mavenCentral()
 }
 
 gradlePlugin {
+    website = "https://github.com/rethab/semantic-gradle"
+    vcsUrl = "https://github.com/rethab/semantic-gradle"
     plugins {
         create("semanticGradle") {
             id = "ch.rethab.semantic-gradle"
             implementationClass = "ch.rethab.semanticgradle.SemanticGradlePlugin"
+            displayName = "Semantic Gradle"
+            description = "Semantic Releases based on Conventional Commits for Gradle"
+            tags = listOf("publish", "release", "semantic-version", "conventional-commits")
         }
     }
 }
