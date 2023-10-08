@@ -2,6 +2,20 @@
 
 Gradle Plugin for Automatic Semantic Versioning
 
+## Automatic Semantic What?
+
+[Semantic Versioning](https://semver.org/) is this idea that in a version like `MAJOR.MINOR.PATCH`, each of the components is updated based on the change.
+For example, for a new feature that is backwards compatible, the minor version is updated (e.g. `1.2.3` --> `1.3.0`).
+
+[Conventional Commits](https://www.conventionalcommits.org/) is this idea that your commits are formatted in a machine-readable way showing what changed.
+For example, a commit that fixes a bug would have a message like `fix: banner url typo`.
+
+These two combined, it possible to automate releasing.
+Based on the commit message, we can automatically determine what version to publish next.
+Imagine your latest published version is `1.2.3`.
+Now you're merging a commit `feat: added new banner`.
+Since this is a new feature, the new version will be `1.3.0`.
+
 ## Configuration
 
 ### Prerequisites
@@ -19,6 +33,12 @@ plugins {
     id 'maven-publish'
 }
 ```
+
+### CI Integration
+
+#### GitHub Actions
+
+TODO
 
 ## Contributions
 
