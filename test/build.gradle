@@ -3,7 +3,7 @@ plugins {
   id 'io.github.rethab.semantic-release' version '0.0.1'
 }
 
-group = 'ch.hope'
+group = 'io.github.rethab.semantic-test'
 version = '1.2.3'
 
 publishing {
