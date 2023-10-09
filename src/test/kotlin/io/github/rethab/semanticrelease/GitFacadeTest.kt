@@ -1,4 +1,4 @@
-package ch.rethab.semanticgradle
+package io.github.rethab.semanticrelease
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

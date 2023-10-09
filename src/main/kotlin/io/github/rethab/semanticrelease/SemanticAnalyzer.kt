@@ -1,4 +1,4 @@
-package ch.rethab.semanticgradle
+package io.github.rethab.semanticrelease
 
 class SemanticAnalyzer {
 

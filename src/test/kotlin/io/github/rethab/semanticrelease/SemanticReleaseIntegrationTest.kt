@@ -1,4 +1,4 @@
-package ch.rethab.semanticgradle
+package io.github.rethab.semanticrelease
 
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -11,7 +11,7 @@ import java.lang.ProcessBuilder.Redirect.*
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertContains
 
-class SemanticGradleIntegrationTest {
+class SemanticReleaseIntegrationTest {
 
     @TempDir
     lateinit var projectDir: File
@@ -27,7 +27,7 @@ class SemanticGradleIntegrationTest {
         buildFile.createNewFile()
         buildFile.writeText("""
             plugins {
-              id 'ch.rethab.semantic-gradle'
+              id 'io.github.rethab.semantic-release'
               id 'maven-publish'
             }
             
@@ -46,7 +46,7 @@ class SemanticGradleIntegrationTest {
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir)
-            .withArguments("semanticGradleSetVersion", "--stacktrace")
+            .withArguments("semanticReleaseSetVersion", "--stacktrace")
             .withPluginClasspath()
             .build()
 
@@ -56,7 +56,7 @@ class SemanticGradleIntegrationTest {
         assertContains(result.output, "fix: delta --> BUMP: PATCH")
         assertContains(result.output, "chore: epsilon --> BUMP: NONE")
         assertContains(result.output, "Next Version: v1.1.1")
-        assertEquals(TaskOutcome.SUCCESS, result.task(":semanticGradleSetVersion")?.outcome)
+        assertEquals(TaskOutcome.SUCCESS, result.task(":semanticReleaseSetVersion")?.outcome)
     }
 
     @Test
@@ -93,8 +93,8 @@ class SemanticGradleIntegrationTest {
         buildFile.appendText("""
             version = "0.0.0-SNAPSHOT"
             
-            tasks.named('semanticGradleSetVersion') {
-                finalizedBy semanticGradleTagVersion
+            tasks.named('semanticReleaseSetVersion') {
+                finalizedBy semanticReleaseTagVersion
             }
         """.trimIndent())
 
@@ -105,12 +105,12 @@ class SemanticGradleIntegrationTest {
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir)
-            .withArguments("semanticGradleSetVersion", "--stacktrace")
+            .withArguments("semanticReleaseSetVersion", "--stacktrace")
             .withPluginClasspath()
             .build()
 
         println("OUTPUT: " + result.output)
-        assertEquals(TaskOutcome.SUCCESS, result.task(":semanticGradleSetVersion")?.outcome)
+        assertEquals(TaskOutcome.SUCCESS, result.task(":semanticReleaseSetVersion")?.outcome)
         assertContains(showTag(upstreamRepository, "v1.0.1"), "fix: delta")
     }
 

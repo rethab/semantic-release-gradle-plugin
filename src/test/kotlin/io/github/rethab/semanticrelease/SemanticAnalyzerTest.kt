@@ -1,4 +1,4 @@
-package ch.rethab.semanticgradle
+package io.github.rethab.semanticrelease
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -21,7 +21,8 @@ class SemanticAnalyzerTest {
 
     @Test
     fun shouldNotIncrementChore() {
-        assertNull(SemanticAnalyzer().incrementVersion(
+        assertNull(
+            SemanticAnalyzer().incrementVersion(
             Version(1, 1, 1),
             listOf(Commit("chore: foo", listOf()))
         ))
@@ -29,7 +30,8 @@ class SemanticAnalyzerTest {
 
     @Test
     fun shouldNotIncrementEmptyCommits() {
-        assertNull(SemanticAnalyzer().incrementVersion(
+        assertNull(
+            SemanticAnalyzer().incrementVersion(
             Version(1, 1, 1),
             listOf()
         ))

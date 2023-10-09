@@ -1,4 +1,4 @@
-# Semantic Gradle
+# Semantic Release Gradle Plugin
 
 Gradle Plugin for Automatic Semantic Versioning
 
@@ -29,7 +29,7 @@ Add this plugin alongside `maven-publish`:
 
 ```groovy
 plugins {
-    id 'ch.rethab.semantic-gradle' version '0.0.1'
+    id 'io.github.rethab.semantic-release' version '0.0.1'
     id 'maven-publish'
 }
 ```

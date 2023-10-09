@@ -8,7 +8,7 @@ kotlin {
     jvmToolchain(8)
 }
 
-group = "ch.rethab"
+group = "io.github.rethab"
 version = "0.0.1"
 
 repositories {
@@ -19,9 +19,9 @@ gradlePlugin {
     website = "https://github.com/rethab/semantic-gradle"
     vcsUrl = "https://github.com/rethab/semantic-gradle"
     plugins {
-        create("semanticGradle") {
-            id = "ch.rethab.semantic-gradle"
-            implementationClass = "ch.rethab.semanticgradle.SemanticGradlePlugin"
+        create("semanticRelease") {
+            id = "io.github.rethab.semantic-release"
+            implementationClass = "io.github.rethab.semanticrelease.SemanticReleasePlugin"
             displayName = "Semantic Gradle"
             description = "Semantic Releases based on Conventional Commits for Gradle"
             tags = listOf("publish", "release", "semantic-version", "conventional-commits")

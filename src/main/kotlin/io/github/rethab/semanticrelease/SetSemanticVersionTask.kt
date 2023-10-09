@@ -1,4 +1,4 @@
-package ch.rethab.semanticgradle
+package io.github.rethab.semanticrelease
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
