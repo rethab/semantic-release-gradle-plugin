@@ -6,6 +6,10 @@ plugins {
 group = 'io.github.rethab.semantic-test'
 version = '1.2.3'
 
+semanticRelease {
+  releaseBranches = ['feat/configurable-release-branches'] // just for testing
+}
+
 publishing {
   repositories {
     mavenLocal()

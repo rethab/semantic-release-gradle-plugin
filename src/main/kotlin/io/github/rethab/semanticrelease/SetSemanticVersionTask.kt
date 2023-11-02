@@ -11,19 +11,19 @@ open class SetSemanticVersionTask : DefaultTask() {
         val latestVersion = git.findLatestVersion()
 
         if (latestVersion == null) {
-            println("No latest version found")
+            logger.warn("No previous version found in git tags. Not sure how to determine next version..")
             return
         }
 
-        println("Latest Version: $latestVersion")
-        println("Commits since then:")
+        logger.quiet("Latest Version: $latestVersion")
+        logger.quiet("Commits since then:")
         val commits = git.findCommitsSince(latestVersion)
         commits.forEach { commit ->
-            println("\t${commit.message} --> BUMP: ${semanticAnalyzer.analyzeCommit(commit)}")
+            logger.quiet("\t${commit.message} --> BUMP: ${semanticAnalyzer.analyzeCommit(commit)}")
         }
 
         val nextVersion = semanticAnalyzer.incrementVersion(latestVersion, commits)
-        println("Next Version: $nextVersion")
+        logger.quiet("Next Version: $nextVersion")
 
         if (nextVersion == null) {
             // TODO properly fail how plugins should fail

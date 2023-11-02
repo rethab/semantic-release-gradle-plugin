@@ -1,10 +1,10 @@
 package io.github.rethab.semanticrelease
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class SemanticAnalyzerTest {
 
@@ -23,18 +23,20 @@ class SemanticAnalyzerTest {
     fun shouldNotIncrementChore() {
         assertNull(
             SemanticAnalyzer().incrementVersion(
-            Version(1, 1, 1),
-            listOf(Commit("chore: foo", listOf()))
-        ))
+                Version(1, 1, 1),
+                listOf(Commit("chore: foo", listOf())),
+            ),
+        )
     }
 
     @Test
     fun shouldNotIncrementEmptyCommits() {
         assertNull(
             SemanticAnalyzer().incrementVersion(
-            Version(1, 1, 1),
-            listOf()
-        ))
+                Version(1, 1, 1),
+                listOf(),
+            ),
+        )
     }
 
     @Test
@@ -47,8 +49,9 @@ class SemanticAnalyzerTest {
                     Commit("chore: foo", listOf()),
                     Commit("fix!: foo", listOf()),
                     Commit("chore: foo", listOf()),
-                )
-            ))
+                ),
+            ),
+        )
     }
 
     @Test
@@ -61,8 +64,9 @@ class SemanticAnalyzerTest {
                     Commit("fix: foo", listOf()),
                     Commit("feat: foo", listOf()),
                     Commit("chore: foo", listOf()),
-                )
-            ))
+                ),
+            ),
+        )
     }
 
     @Test
@@ -75,8 +79,8 @@ class SemanticAnalyzerTest {
                     Commit("fix: foo", listOf()),
                     Commit("chore: foo", listOf()),
                     Commit("fix: foo", listOf()),
-                )
-            ))
+                ),
+            ),
+        )
     }
-
 }

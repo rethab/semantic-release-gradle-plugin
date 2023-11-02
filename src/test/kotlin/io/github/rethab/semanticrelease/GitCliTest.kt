@@ -19,5 +19,4 @@ class GitCliTest {
 
         assertEquals(Commit("fix: delta", listOf()), commit)
     }
-
 }

@@ -1,4 +1,7 @@
 package io.github.rethab.semanticrelease
 
-open class SemanticReleaseExtension {
+import org.gradle.api.provider.ListProperty
+
+interface SemanticReleaseExtension {
+    val releaseBranches: ListProperty<String>
 }

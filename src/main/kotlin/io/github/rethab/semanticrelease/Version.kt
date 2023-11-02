@@ -19,7 +19,7 @@ data class Version(
     }
 
     fun toString(vPrefix: Boolean): String {
-        return "${if (vPrefix) "v" else ""}${major}.${minor}.${patch}"
+        return "${ if (vPrefix) "v" else ""}$major.$minor.$patch"
     }
 
     companion object {
