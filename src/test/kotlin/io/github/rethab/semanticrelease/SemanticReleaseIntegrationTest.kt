@@ -2,14 +2,16 @@ package io.github.rethab.semanticrelease
 
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.lang.ProcessBuilder.Redirect.*
+import java.lang.ProcessBuilder.Redirect.INHERIT
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertContains
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class SemanticReleaseIntegrationTest {
 
@@ -25,24 +27,28 @@ class SemanticReleaseIntegrationTest {
     fun setup() {
         buildFile = File(projectDir, "build.gradle")
         buildFile.createNewFile()
-        buildFile.writeText("""
+        buildFile.writeText(
+            """
             plugins {
               id 'io.github.rethab.semantic-release'
               id 'maven-publish'
             }
             
-        """.trimIndent())
+            """.trimIndent(),
+        )
     }
 
     @Test
     fun showsCommitUntilLatestVersion() {
-        createRepository(listOf(
-            "alpha" to "v1.0.0",
-            "beta" to "v1.1.0",
-            "chore: gamma" to null,
-            "fix: delta" to null,
-            "chore: epsilon" to null,
-        ))
+        createRepository(
+            listOf(
+                "alpha" to "v1.0.0",
+                "beta" to "v1.1.0",
+                "chore: gamma" to null,
+                "fix: delta" to null,
+                "chore: epsilon" to null,
+            ),
+        )
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir)
@@ -61,7 +67,8 @@ class SemanticReleaseIntegrationTest {
 
     @Test
     fun shouldSetVersionInPom() {
-        buildFile.appendText("""
+        buildFile.appendText(
+            """
             version = "0.0.0-SNAPSHOT"
             
             publishing {
@@ -69,12 +76,15 @@ class SemanticReleaseIntegrationTest {
                 mavenJava(MavenPublication) {}
               }
             }
-        """.trimIndent())
+            """.trimIndent(),
+        )
 
-        createRepository(listOf(
-            "alpha" to "v1.0.0",
-            "fix: delta" to null
-        ))
+        createRepository(
+            listOf(
+                "alpha" to "v1.0.0",
+                "fix: delta" to null,
+            ),
+        )
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir)
@@ -90,18 +100,22 @@ class SemanticReleaseIntegrationTest {
 
     @Test
     fun shouldTagCommitAndPush() {
-        buildFile.appendText("""
+        buildFile.appendText(
+            """
             version = "0.0.0-SNAPSHOT"
             
             tasks.named('semanticReleaseSetVersion') {
                 finalizedBy semanticReleaseTagVersion
             }
-        """.trimIndent())
+            """.trimIndent(),
+        )
 
-        createRepository(listOf(
-            "alpha" to "v1.0.0",
-            "fix: delta" to null
-        ))
+        createRepository(
+            listOf(
+                "alpha" to "v1.0.0",
+                "fix: delta" to null,
+            ),
+        )
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir)
@@ -140,7 +154,6 @@ class SemanticReleaseIntegrationTest {
 
         assertTrue(process.waitFor(2, TimeUnit.SECONDS), "Command failed: $command")
         assertEquals(0, process.exitValue())
-
     }
 
     private fun showTag(dir: File, tag: String): String {
@@ -151,5 +164,4 @@ class SemanticReleaseIntegrationTest {
 
         return outputLines.joinToString("\n")
     }
-
 }

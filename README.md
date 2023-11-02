@@ -38,7 +38,31 @@ plugins {
 
 #### GitHub Actions
 
-TODO
+```yaml
+name: CI
+
+# workflow will push tags (tags are a form of content)
+permissions:
+  contents: write
+
+# trigger workflow on pull requests and when merging (pushing) to main
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+      - run: ./gradlew publish
+```
 
 ## Contributions
 
