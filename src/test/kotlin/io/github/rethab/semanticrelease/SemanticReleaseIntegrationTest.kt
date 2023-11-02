@@ -12,6 +12,7 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 class SemanticReleaseIntegrationTest {
 
@@ -126,6 +127,70 @@ class SemanticReleaseIntegrationTest {
         println("OUTPUT: " + result.output)
         assertEquals(TaskOutcome.SUCCESS, result.task(":semanticReleaseSetVersion")?.outcome)
         assertContains(showTag(upstreamRepository, "v1.0.1"), "fix: delta")
+    }
+
+    @Test
+    fun shouldNotCommitOnBranchThatIsNotReleaseBranch() {
+        buildFile.appendText(
+            """
+            version = "0.0.0-SNAPSHOT"
+            
+            tasks.named('semanticReleaseSetVersion') {
+                finalizedBy semanticReleaseTagVersion
+            }
+            
+            semanticRelease {
+              releaseBranches = ['feat/configurable-release-branches']
+            }
+            """.trimIndent(),
+        )
+
+        createRepository(
+            listOf(
+                "alpha" to "v1.0.0",
+                "fix: delta" to null,
+            ),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments("semanticReleaseSetVersion", "--stacktrace")
+            .withPluginClasspath()
+            .build()
+
+        fail("fix me")
+    }
+
+    @Test
+    fun shouldCommitOnBranchThatIsConfiguredAsReleaseBranch() {
+        buildFile.appendText(
+            """
+            version = "0.0.0-SNAPSHOT"
+            
+            tasks.named('semanticReleaseSetVersion') {
+                finalizedBy semanticReleaseTagVersion
+            }
+            
+            semanticRelease {
+              releaseBranches = ['my-new-release-branch']
+            }
+            """.trimIndent(),
+        )
+
+        createRepository(
+            listOf(
+                "alpha" to "v1.0.0",
+                "fix: delta" to null,
+            ),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments("semanticReleaseSetVersion", "--stacktrace")
+            .withPluginClasspath()
+            .build()
+
+        fail("fix me")
     }
 
     private fun createRepository(commitsAndTags: List<Pair<String, String?>>) {
